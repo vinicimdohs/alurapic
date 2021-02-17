@@ -1,6 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { AuthService } from "src/app/core/auth.service";
+import { Router } from "@angular/router";
+import { AuthService } from "src/app/core/auth/auth.service";
+import { PlatfotmDetectorService } from "src/app/core/platform/platform-detector.service";
 
 @Component({
   templateUrl: './sigin.component.html'
@@ -8,9 +10,12 @@ import { AuthService } from "src/app/core/auth.service";
 export class SiginComponent implements OnInit{
 
   loginForm: FormGroup;
+  @ViewChild('userNameInput') userNameInput: ElementRef<HTMLInputElement>;
 
   constructor(private formBuilder: FormBuilder,
-              private authService:AuthService)
+              private authService:AuthService,
+              private router: Router,
+              private platFormDetectorService : PlatfotmDetectorService)
               {}
 
   ngOnInit():void{
@@ -27,10 +32,13 @@ export class SiginComponent implements OnInit{
 
   this.authService
         .authenticate(userName,password)
-        .subscribe(()=>console.log('AUNTENTICADO'),
+        .subscribe(()=>this.router.navigate(['user',userName]),
         err=>{
           console.log(err);
           this.loginForm.reset();
+          this.platFormDetectorService.isPlatformBrowser() &&
+              this.userNameInput.nativeElement.focus();//ACESSANDO O DOM
+          alert('invalid user name or password!!!')
         })
         ;
   }
