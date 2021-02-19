@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { NewUser } from './new-user';
+import { SignUpService } from './signup.service';
 import { UserNotTakenValidatorService } from './user-not-taken.validator.service';
 
 @Component({
@@ -10,7 +13,9 @@ export class SignUpComponent implements OnInit {
   signupForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
-              private userNotTakenValidatorService : UserNotTakenValidatorService) {}
+              private userNotTakenValidatorService : UserNotTakenValidatorService
+              ,private signupService : SignUpService,
+              private router : Router) {}
 
   ngOnInit(): void {
 
@@ -48,5 +53,13 @@ export class SignUpComponent implements OnInit {
               ]
           ]
       });
+  }
+
+  signup(){
+      const newUser = this.signupForm.getRawValue() as NewUser;
+      this.signupService.signup(newUser)
+      .subscribe(()=>{
+          this.router.navigate(['']);
+      })
   }
 }
